@@ -110,10 +110,6 @@ var (
 	}...)
 )
 
-func init() {
-	fmt.Printf("bla: %v", len(Platforms_1_7))
-}
-
 // SupportedPlatforms returns the full list of supported platforms for
 // the version of Go that is
 func SupportedPlatforms(v string) []Platform {
