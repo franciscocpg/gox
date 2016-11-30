@@ -112,10 +112,19 @@ func GoCrossCompile(opts *CompileOpts) error {
 	if opts.Rebuild {
 		args = append(args, "-a")
 	}
+	if opts.Gcflags != "" {
+		args = append(args,
+			"-gcflags", opts.Gcflags)
+	}
+	if opts.Ldflags != "" {
+		args = append(args,
+			"-ldflags", opts.Ldflags)
+	}
+	if opts.Tags != "" {
+		args = append(args,
+			"-tags", opts.Tags)
+	}
 	args = append(args,
-		"-gcflags", opts.Gcflags,
-		"-ldflags", opts.Ldflags,
-		"-tags", opts.Tags,
 		"-o", outputPathReal,
 		opts.PackagePath)
 
@@ -137,7 +146,7 @@ func GoMainDirs(packages []string, GoCmd string) ([]string, error) {
 	}
 
 	results := make([]string, 0, len(output))
-	for _, line := range strings.Split(output, "\n") {
+	for indx, line := range strings.Split(output, "\n") {
 		if line == "" {
 			continue
 		}
@@ -149,8 +158,13 @@ func GoMainDirs(packages []string, GoCmd string) ([]string, error) {
 		}
 
 		if parts[0] == "main" {
-			results = append(results, parts[1])
+			if parts[1] == "command-line-arguments" {
+				results = append(results, packages[indx])
+			} else {
+				results = append(results, parts[1])
+			}
 		}
+
 	}
 
 	return results, nil
